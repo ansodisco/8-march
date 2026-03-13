@@ -1808,27 +1808,60 @@
         // ===============================
         const STORAGE_KEY = 'march8_photobooth';
         let cameraStream = null;
+        const API_PHOTOS_URL = './api_photos.php';
 
-        // Load photos from localStorage
-        function loadPhotos() {
+        // Load photos from server
+        async function loadPhotos() {
             try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                return data ? JSON.parse(data) : [];
+                const response = await fetch(API_PHOTOS_URL);
+                if (!response.ok) throw new Error('Failed to load photos');
+                const result = await response.json();
+                return result.data || [];
             } catch(e) {
-                return [];
+                console.error('Error loading photos:', e);
+                // Fallback to localStorage
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : [];
+                } catch(err) {
+                    return [];
+                }
             }
         }
 
-        // Save photos to localStorage
-        function savePhotos(photos) {
+        // Save photo to server
+        async function savePhoto(photoData) {
+            const now = new Date();
+            const payload = {
+                dataURL: photoData,
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: now.toLocaleDateString()
+            };
+            
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+                const response = await fetch(API_PHOTOS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error('Failed to save photo');
+                return await response.json();
             } catch(e) {
-                // localStorage might be full — remove oldest photo and retry
-                if (photos.length > 1) {
-                    photos.shift();
-                    savePhotos(photos);
+                console.error('Error saving photo to server:', e);
+                // Fallback: save to localStorage
+                try {
+                    const photos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    photos.push({
+                        src: photoData,
+                        time: payload.time,
+                        date: payload.date
+                    });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+                } catch(err) {
+                    console.error('Could not save to localStorage:', err);
                 }
+                return { success: false, message: 'Saved locally (offline mode)' };
             }
         }
 
@@ -1877,7 +1910,7 @@
         }
 
         // Capture photo
-        function capturePhoto() {
+        async function capturePhoto() {
             const video = document.getElementById('camera-video');
             const canvas = document.getElementById('camera-canvas');
             const flash = document.getElementById('camera-flash');
@@ -1900,26 +1933,19 @@
             // Convert to data URL (JPEG for smaller size)
             const dataURL = canvas.toDataURL('image/jpeg', 0.7);
 
-            // Save to localStorage
-            const photos = loadPhotos();
-            const now = new Date();
-            photos.push({
-                src: dataURL,
-                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                date: now.toLocaleDateString()
-            });
-            savePhotos(photos);
+            // Save to server
+            await savePhoto(dataURL);
 
             // Update gallery
-            renderGallery();
+            await renderGallery();
         }
 
         // Render gallery
-        function renderGallery() {
+        async function renderGallery() {
             const grid = document.getElementById('gallery-grid');
             const empty = document.getElementById('gallery-empty');
             const count = document.getElementById('gallery-count');
-            const photos = loadPhotos();
+            const photos = await loadPhotos();
 
             if (photos.length === 0) {
                 empty.style.display = 'block';
@@ -1934,11 +1960,14 @@
             // Render in reverse (newest first)
             grid.innerHTML = photos.slice().reverse().map((photo, i) => {
                 const realIndex = photos.length - 1 - i;
+                // Handle both old localStorage format (src) and new API format (image_data)
+                const imgSrc = photo.src || photo.image_data;
+                const timeDisplay = photo.time || photo.time_display || 'Unknown';
                 return `
                     <div class="gallery-item" onclick="openLightbox('${realIndex}')">
-                        <img src="${photo.src}" alt="Photo ${realIndex + 1}" loading="lazy">
+                        <img src="${imgSrc}" alt="Photo ${realIndex + 1}" loading="lazy">
                         <div class="gallery-item-overlay">
-                            <span class="gallery-item-time">${photo.time}</span>
+                            <span class="gallery-item-time">${timeDisplay}</span>
                             <button class="gallery-item-delete" onclick="event.stopPropagation(); deletePhoto(${realIndex})" title="Delete">
                                 ✕
                             </button>
@@ -1949,16 +1978,32 @@
         }
 
         // Delete a photo
-        function deletePhoto(index) {
-            const photos = loadPhotos();
-            photos.splice(index, 1);
-            savePhotos(photos);
-            renderGallery();
+        async function deletePhoto(index) {
+            const photos = await loadPhotos();
+            const photo = photos[index];
+            if (!photo) return;
+
+            try {
+                // Delete from server
+                if (photo.id) {
+                    const response = await fetch(API_PHOTOS_URL, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: photo.id })
+                    });
+                    if (!response.ok) throw new Error('Failed to delete');
+                }
+            } catch(e) {
+                console.error('Error deleting photo from server:', e);
+            }
+            
+            // Update gallery
+            await renderGallery();
         }
 
         // Lightbox
-        function openLightbox(index) {
-            const photos = loadPhotos();
+        async function openLightbox(index) {
+            const photos = await loadPhotos();
             const photo = photos[index];
             if (!photo) return;
 
@@ -1966,8 +2011,10 @@
             const img = document.getElementById('lightbox-img');
             const downloadLink = document.getElementById('lightbox-download');
 
-            img.src = photo.src;
-            downloadLink.href = photo.src;
+            // Handle both formats
+            const imgSrc = photo.src || photo.image_data;
+            img.src = imgSrc;
+            downloadLink.href = imgSrc;
             lightbox.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
@@ -2024,21 +2071,58 @@
         //  SUGGESTION BOX LOGIC
         // ===============================
         const SUGGESTIONS_KEY = 'march8_suggestions';
+        const API_SUGGESTIONS_URL = './api_suggestions.php';
 
-        function loadSuggestions() {
+        async function loadSuggestions() {
             try {
-                const data = localStorage.getItem(SUGGESTIONS_KEY);
-                return data ? JSON.parse(data) : [];
+                const response = await fetch(API_SUGGESTIONS_URL);
+                if (!response.ok) throw new Error('Failed to load suggestions');
+                const result = await response.json();
+                return result.data || [];
             } catch(e) {
-                return [];
+                console.error('Error loading suggestions:', e);
+                // Fallback to localStorage
+                try {
+                    const data = localStorage.getItem(SUGGESTIONS_KEY);
+                    return data ? JSON.parse(data) : [];
+                } catch(err) {
+                    return [];
+                }
             }
         }
 
-        function saveSuggestions(suggestions) {
+        async function saveSuggestion(text) {
+            const now = new Date();
+            const payload = {
+                text: text.trim(),
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: now.toLocaleDateString()
+            };
+            
             try {
-                localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(suggestions));
+                const response = await fetch(API_SUGGESTIONS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error('Failed to save suggestion');
+                return await response.json();
             } catch(e) {
-                console.error('Could not save suggestions:', e);
+                console.error('Error saving suggestion to server:', e);
+                // Fallback: save to localStorage
+                try {
+                    const suggestions = JSON.parse(localStorage.getItem(SUGGESTIONS_KEY) || '[]');
+                    suggestions.push({
+                        text: payload.text,
+                        time: payload.time,
+                        date: payload.date
+                    });
+                    localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(suggestions));
+                } catch(err) {
+                    console.error('Could not save to localStorage:', err);
+                }
+                return { success: false, message: 'Saved locally (offline mode)' };
             }
         }
 
@@ -2076,7 +2160,7 @@
         }
 
         // Send suggestion
-        function sendSuggestion() {
+        async function sendSuggestion() {
             const input = document.getElementById('suggestion-input');
             const btn = document.getElementById('btn-send-suggestion');
             const confirmation = document.getElementById('sent-confirmation');
@@ -2096,15 +2180,8 @@
             animateFlyingLetter();
 
             // Save after animation
-            setTimeout(() => {
-                const suggestions = loadSuggestions();
-                const now = new Date();
-                suggestions.push({
-                    text: text,
-                    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    date: now.toLocaleDateString()
-                });
-                saveSuggestions(suggestions);
+            setTimeout(async () => {
+                await saveSuggestion(text);
 
                 // Clear input
                 input.value = '';
@@ -2117,16 +2194,16 @@
                 btn.disabled = false;
 
                 // Update list
-                renderSuggestions();
+                await renderSuggestions();
             }, 800);
         }
 
         // Render suggestions
-        function renderSuggestions() {
+        async function renderSuggestions() {
             const container = document.getElementById('suggestions-cards');
             const empty = document.getElementById('suggestions-empty');
             const count = document.getElementById('suggestions-count');
-            const suggestions = loadSuggestions();
+            const suggestions = await loadSuggestions();
 
             if (suggestions.length === 0) {
                 empty.style.display = 'block';
@@ -2142,12 +2219,14 @@
             container.innerHTML = suggestions.slice().reverse().map((s, i) => {
                 // Escape HTML
                 const safe = s.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                const timeDisplay = s.time || s.time_display || 'Unknown';
+                const dateDisplay = s.date || s.date_display || '';
                 return `
                     <div class="suggestion-card">
                         <div class="suggestion-card-text">${safe}</div>
                         <div class="suggestion-card-meta">
                             <span class="anon-badge">Anonymous</span>
-                            <span>${s.time} · ${s.date}</span>
+                            <span>${timeDisplay} · ${dateDisplay}</span>
                         </div>
                     </div>
                 `;
