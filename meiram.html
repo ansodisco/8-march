@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>8 March — You're Invited ✨</title>
+    <meta name="description" content="A special invitation to celebrate International Women's Day together.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ===== CSS Reset & Base ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --accent: #FF6B8A;
+            --accent-warm: #FF8FA3;
+            --accent-glow: rgba(255, 107, 138, 0.3);
+            --card: #111111;
+            --text-primary: #ffe0e8;
+            --text-secondary: rgba(255, 224, 232, 0.7);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        /* ===== Noise Texture Overlay ===== */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.04;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ===== Floating Petals Animation ===== */
+        @keyframes float-petal-1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.6; }
+            25% { transform: translate(30px, -40px) rotate(90deg); opacity: 0.8; }
+            50% { transform: translate(-20px, -80px) rotate(180deg); opacity: 0.4; }
+            75% { transform: translate(40px, -120px) rotate(270deg); opacity: 0.7; }
+        }
+
+        @keyframes float-petal-2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.5; }
+            33% { transform: translate(-40px, -60px) rotate(120deg); opacity: 0.7; }
+            66% { transform: translate(20px, -100px) rotate(240deg); opacity: 0.3; }
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(255, 107, 138, 0.1); }
+            50% { box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(255, 107, 138, 0.2); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-out {
+            to {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.98);
+            }
+        }
+
+        @keyframes fade-in-scale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== Floating Decorative Elements ===== */
+        .floating-element {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .petal {
+            width: 20px;
+            height: 20px;
+            border-radius: 50% 0 50% 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+            opacity: 0.3;
+        }
+
+        .petal-1 { top: 10%; left: 5%; animation: float-petal-1 18s ease-in-out infinite; }
+        .petal-2 { top: 20%; right: 8%; animation: float-petal-2 22s ease-in-out infinite 2s; width: 14px; height: 14px; }
+        .petal-3 { top: 60%; left: 3%; animation: float-petal-1 20s ease-in-out infinite 4s; width: 16px; height: 16px; }
+        .petal-4 { top: 40%; right: 4%; animation: float-petal-2 16s ease-in-out infinite 1s; width: 12px; height: 12px; }
+        .petal-5 { top: 75%; right: 10%; animation: float-petal-1 24s ease-in-out infinite 3s; width: 18px; height: 18px; }
+        .petal-6 { top: 30%; left: 12%; animation: float-petal-2 19s ease-in-out infinite 5s; width: 10px; height: 10px; }
+
+        /* ===== Sparkle Stars ===== */
+        .sparkle-star {
+            position: absolute;
+            pointer-events: none;
+            z-index: 2;
+            font-size: 16px;
+        }
+
+        .star-1 { top: 15%; left: 15%; animation: sparkle 4s ease-in-out infinite; }
+        .star-2 { top: 25%; right: 20%; animation: sparkle 5s ease-in-out infinite 1s; font-size: 12px; }
+        .star-3 { top: 65%; left: 8%; animation: sparkle 6s ease-in-out infinite 2s; font-size: 10px; }
+        .star-4 { top: 50%; right: 15%; animation: sparkle 4.5s ease-in-out infinite 3s; font-size: 14px; }
+        .star-5 { top: 80%; left: 20%; animation: sparkle 5.5s ease-in-out infinite 1.5s; font-size: 11px; }
+
+        /* ===== Main Container ===== */
+        .invitation-wrapper {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ===== Background Atmosphere ===== */
+        .bg-atmosphere {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+        }
+
+        .orb-1 {
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, #FF6B8A, #FF8FA3, transparent 70%);
+        }
+
+        .orb-2 {
+            bottom: -30%;
+            right: -15%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, #FFB3C6, #FF8FA3, transparent 70%);
+            opacity: 0.1;
+        }
+
+        .orb-3 {
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, #FFDEE2, transparent 70%);
+            opacity: 0.06;
+        }
+
+        /* ===== Content Sections ===== */
+        .intro-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            max-width: 700px;
+            width: 100%;
+            transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), 
+                        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .intro-content.fade-out {
+            animation: fade-out 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* ===== Decorative Eight ===== */
+        .eight-decoration {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .eight-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 107, 138, 0.1);
+            animation: spin-slow 30s linear infinite;
+        }
+
+        .eight-ring::before {
+            content: '✦';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent);
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        /* ===== Main Title ===== */
+        .main-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(4rem, 12vw, 9rem);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 0.3em;
+            text-shadow: 0 0 60px rgba(255, 107, 138, 0.3),
+                         0 0 120px rgba(255, 107, 138, 0.1);
+            animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+        }
+
+        .main-title .march-text {
+            display: block;
+            font-size: 0.35em;
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-warm);
+            margin-top: 0.3em;
+            opacity: 0.8;
+        }
+
+        /* ===== Subtitle / Description ===== */
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 3rem;
+            letter-spacing: 0.01em;
+            animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+            opacity: 0;
+        }
+
+        .subtitle .highlight {
+            color: var(--accent-warm);
+            font-weight: 400;
+        }
+
+        /* ===== Divider ===== */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 0 auto 2.5rem;
+            animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+            opacity: 0;
+        }
+
+        /* ===== Buttons Container ===== */
+        .buttons-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+            opacity: 0;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Yes Button ===== */
+        .btn-yes {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 48px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: linear-gradient(135deg, var(--accent), var(--accent-warm), #FFD1DC);
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+            animation: pulse-glow 3s ease-in-out infinite;
+            z-index: 20;
+        }
+
+        .btn-yes::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+            border-radius: inherit;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 40px var(--accent-glow),
+                        0 8px 30px rgba(255, 107, 138, 0.3);
+        }
+
+        .btn-yes:active {
+            transform: scale(1.02);
+        }
+
+        .btn-yes span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== No Button ===== */
+        .btn-no {
+            position: absolute;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 48px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 20;
+            touch-action: none;
+        }
+
+        .btn-no-static {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 48px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: none;
+        }
+
+        .btn-no:hover, .btn-no-static:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== Success Screen ===== */
+        .success-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        .success-content.show {
+            animation: fade-in-scale 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            pointer-events: auto;
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 7vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: center;
+            color: var(--text-primary);
+            text-shadow: 0 0 60px rgba(255, 107, 138, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .success-heart {
+            font-size: clamp(3rem, 8vw, 5rem);
+            display: block;
+            margin-top: 1rem;
+            animation: float-gentle 2s ease-in-out infinite;
+        }
+
+        .success-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-top: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===== Bottom Decorative Line ===== */
+        .bottom-accent {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent-warm), transparent);
+            opacity: 0.3;
+            z-index: 5;
+        }
+
+        /* ===== Dot Pattern Background ===== */
+        .dot-pattern {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: radial-gradient(circle, rgba(255, 107, 138, 0.8) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 640px) {
+            .buttons-container {
+                gap: 1rem;
+            }
+
+            .btn-yes, .btn-no-static {
+                padding: 14px 36px;
+                font-size: 0.9rem;
+            }
+
+            .btn-no {
+                padding: 14px 36px;
+                font-size: 0.9rem;
+            }
+
+            .petal {
+                opacity: 0.2;
+            }
+        }
+
+        /* ===== Selection Color ===== */
+        ::selection {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ===== Photo Booth Section ===== */
+        .photobooth-section {
+            position: relative;
+            background: var(--bg);
+            padding: 5rem 1.5rem;
+            overflow: hidden;
+        }
+
+        .photobooth-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent-warm), transparent);
+            opacity: 0.3;
+        }
+
+        .photobooth-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .photobooth-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .photobooth-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .photobooth-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 40px rgba(255, 107, 138, 0.2);
+        }
+
+        .photobooth-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        /* Camera Area */
+        .camera-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 4 / 3;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(255, 107, 138, 0.05);
+        }
+
+        .camera-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .camera-container canvas {
+            display: none;
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .camera-placeholder-icon {
+            font-size: 3rem;
+            opacity: 0.4;
+        }
+
+        .camera-placeholder.hidden {
+            display: none;
+        }
+
+        /* Flash Effect */
+        .camera-flash {
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 24px;
+        }
+
+        .camera-flash.flash-active {
+            animation: camera-flash-anim 0.4s ease-out;
+        }
+
+        @keyframes camera-flash-anim {
+            0% { opacity: 0.9; }
+            100% { opacity: 0; }
+        }
+
+        /* Camera Buttons */
+        .camera-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-camera-start {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 14px 32px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-camera-start:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-camera-start.hidden {
+            display: none;
+        }
+
+        .btn-capture {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .btn-capture::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-capture:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(255, 107, 138, 0.2);
+        }
+
+        .btn-capture:active {
+            transform: scale(0.95);
+        }
+
+        .btn-capture.hidden {
+            display: none;
+        }
+
+        .btn-stop-camera {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.4);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-stop-camera:hover {
+            color: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-stop-camera.hidden {
+            display: none;
+        }
+
+        /* Gallery */
+        .gallery-section {
+            margin-top: 1rem;
+        }
+
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .gallery-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .gallery-count {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            animation: fade-in-scale 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            border-color: rgba(255, 107, 138, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4),
+                        0 0 20px rgba(255, 107, 138, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.6) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item-time {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        .gallery-item-delete {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .gallery-item-delete:hover {
+            background: rgba(255, 80, 80, 0.4);
+            color: white;
+        }
+
+        .gallery-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .gallery-empty-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.8rem;
+            opacity: 0.5;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-download {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 10px 24px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .lightbox-download:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Photo Booth Background Orb */
+        .photobooth-orb {
+            position: absolute;
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(255, 107, 138, 0.08), transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== Suggestion Box Section ===== */
+        .suggestion-section {
+            position: relative;
+            background: var(--bg);
+            padding: 5rem 1.5rem;
+            overflow: hidden;
+        }
+
+        .suggestion-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent-warm), transparent);
+            opacity: 0.3;
+        }
+
+        .suggestion-inner {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .suggestion-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .suggestion-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 40px rgba(255, 107, 138, 0.2);
+        }
+
+        .suggestion-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+            line-height: 1.6;
+        }
+
+        /* Countdown Timer */
+        .countdown-wrapper {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .countdown-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .countdown-boxes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            background: rgba(255, 107, 138, 0.08);
+            border: 1px solid rgba(255, 107, 138, 0.15);
+            border-radius: 16px;
+            padding: 0.4em 0.6em;
+            min-width: 70px;
+            text-align: center;
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(255, 107, 138, 0.2);
+        }
+
+        .countdown-unit-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .countdown-separator {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            color: var(--accent);
+            opacity: 0.4;
+            margin-top: -1.2rem;
+        }
+
+        @media (max-width: 480px) {
+            .countdown-number {
+                min-width: 55px;
+                padding: 0.35em 0.4em;
+            }
+            .countdown-boxes {
+                gap: 0.4rem;
+            }
+        }
+
+        /* Mailbox + Flying Letters */
+        .mailbox-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .mailbox {
+            position: relative;
+            width: 180px;
+            height: 140px;
+            margin-bottom: 1.5rem;
+        }
+
+        .mailbox-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 100px;
+            background: linear-gradient(145deg, #FF6B8A, #FF8FA3, #FFB3C6);
+            border-radius: 12px 12px 16px 16px;
+            box-shadow: 0 10px 40px rgba(255, 107, 138, 0.3),
+                        inset 0 -4px 12px rgba(0,0,0,0.15);
+        }
+
+        .mailbox-slot {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .mailbox-flag {
+            position: absolute;
+            right: -8px;
+            top: 15px;
+            width: 8px;
+            height: 40px;
+            background: #FF4D6A;
+            border-radius: 4px;
+        }
+
+        .mailbox-flag::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 12px;
+            background: #FF4D6A;
+            border-radius: 2px;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            transform: translateX(100%);
+        }
+
+        .mailbox-heart {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .mailbox-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(0, 0, 0, 0.35);
+            white-space: nowrap;
+        }
+
+        /* Flying Letter Animation */
+        .flying-letter {
+            position: absolute;
+            font-size: 1.6rem;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+        }
+
+        @keyframes fly-letter {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            60% {
+                opacity: 1;
+                transform: translate(var(--fly-x), var(--fly-y)) rotate(-15deg) scale(0.9);
+            }
+            85% {
+                opacity: 0.8;
+                transform: translate(var(--fly-x), calc(var(--fly-y) - 10px)) rotate(-5deg) scale(0.6);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--fly-x), var(--fly-y)) rotate(0deg) scale(0.2);
+            }
+        }
+
+        /* Input Form */
+        .suggestion-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .suggestion-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .suggestion-input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .suggestion-input:focus {
+            border-color: rgba(255, 107, 138, 0.4);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 20px rgba(255, 107, 138, 0.1);
+        }
+
+        .btn-send-suggestion {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 14px 36px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: linear-gradient(135deg, var(--accent), var(--accent-warm), #FFD1DC);
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-send-suggestion:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .btn-send-suggestion:active {
+            transform: scale(0.98);
+        }
+
+        .btn-send-suggestion:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Sent Confirmation */
+        .sent-confirmation {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-warm);
+            font-size: 0.85rem;
+            font-weight: 400;
+            animation: fade-in-up 0.5s ease forwards;
+        }
+
+        .sent-confirmation.show {
+            display: flex;
+        }
+
+        /* Suggestions List */
+        .suggestions-list {
+            margin-top: 3rem;
+        }
+
+        .suggestions-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .suggestions-list-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .suggestions-list-count {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .suggestion-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+            animation: fade-in-up 0.4s ease forwards;
+        }
+
+        .suggestion-card:hover {
+            border-color: rgba(255, 107, 138, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .suggestion-card-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .suggestion-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .suggestion-card-meta .anon-badge {
+            padding: 2px 8px;
+            background: rgba(255, 107, 138, 0.1);
+            border-radius: 20px;
+            color: var(--accent-warm);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .suggestions-empty {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .suggestion-orb {
+            position: absolute;
+            top: -15%;
+            right: -10%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(255, 107, 138, 0.06), transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Global Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Main Wrapper -->
+    <div class="invitation-wrapper" id="app">
+
+        <!-- Background Atmosphere -->
+        <div class="bg-atmosphere">
+            <div class="bg-gradient-orb orb-1"></div>
+            <div class="bg-gradient-orb orb-2"></div>
+            <div class="bg-gradient-orb orb-3"></div>
+        </div>
+
+        <!-- Dot Pattern -->
+        <div class="dot-pattern"></div>
+
+        <!-- Floating Petals -->
+        <div class="floating-element petal petal-1"></div>
+        <div class="floating-element petal petal-2"></div>
+        <div class="floating-element petal petal-3"></div>
+        <div class="floating-element petal petal-4"></div>
+        <div class="floating-element petal petal-5"></div>
+        <div class="floating-element petal petal-6"></div>
+
+        <!-- Sparkle Stars -->
+        <div class="sparkle-star star-1">✦</div>
+        <div class="sparkle-star star-2">✧</div>
+        <div class="sparkle-star star-3">✦</div>
+        <div class="sparkle-star star-4">✧</div>
+        <div class="sparkle-star star-5">✦</div>
+
+        <!-- === INTRO CONTENT === -->
+        <div class="intro-content" id="intro-content">
+            <!-- Decorative Ring -->
+            <div class="eight-decoration">
+                <div class="eight-ring"></div>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="main-title" id="main-title">
+                8
+                <span class="march-text">March</span>
+            </h1>
+
+            <!-- Divider -->
+            <div class="divider"></div>
+
+            <!-- Subtitle -->
+            <p class="subtitle">
+                Let's celebrate together! Join us at the cottage.<br>
+                Gathering on <span class="highlight">this Saturday</span>, at <span class="highlight">14:00</span>.<br>
+                Are you in?
+            </p>
+
+            <!-- Buttons -->
+            <div class="buttons-container" id="buttons-container">
+                <button class="btn-yes" id="btn-yes" onclick="handleYes()">
+                    <span>Yes</span>
+                </button>
+                <button class="btn-no-static" id="btn-no" aria-label="No">
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- === SUCCESS CONTENT === -->
+        <div class="success-content" id="success-content">
+            <div class="success-title">
+                Then we are<br>waiting for you!
+            </div>
+            <span class="success-heart">❤️</span>
+            <p class="success-subtitle">See you on Saturday ✨</p>
+        </div>
+
+        <!-- Bottom Accent Line -->
+        <div class="bottom-accent"></div>
+    </div>
+
+    <!-- ===== PHOTO BOOTH SECTION ===== -->
+    <section class="photobooth-section" id="photobooth">
+        <div class="photobooth-orb"></div>
+        <div class="photobooth-inner">
+            <!-- Header -->
+            <div class="photobooth-header">
+                <span class="photobooth-icon">📸</span>
+                <h2 class="photobooth-title">Photo Booth</h2>
+                <p class="photobooth-subtitle">Snap a selfie and leave your mark on the party wall!</p>
+            </div>
+
+            <!-- Camera -->
+            <div class="camera-area">
+                <div class="camera-container" id="camera-container">
+                    <video id="camera-video" autoplay playsinline muted></video>
+                    <canvas id="camera-canvas"></canvas>
+                    <div class="camera-flash" id="camera-flash"></div>
+                    <div class="camera-placeholder" id="camera-placeholder">
+                        <span class="camera-placeholder-icon">📷</span>
+                        <span>Tap below to open camera</span>
+                    </div>
+                </div>
+
+                <div class="camera-buttons">
+                    <button class="btn-camera-start" id="btn-camera-start" onclick="startCamera()">
+                        <span>📷</span> Open Camera
+                    </button>
+                    <button class="btn-capture hidden" id="btn-capture" onclick="capturePhoto()"></button>
+                    <button class="btn-stop-camera hidden" id="btn-stop-camera" onclick="stopCamera()">
+                        ✕ Close
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gallery -->
+            <div class="gallery-section" id="gallery-section">
+                <div class="gallery-header">
+                    <span class="gallery-label">✦ Party Wall</span>
+                    <span class="gallery-count" id="gallery-count"></span>
+                </div>
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Photos will be inserted here -->
+                </div>
+                <div class="gallery-empty" id="gallery-empty">
+                    <span class="gallery-empty-icon">🌸</span>
+                    No photos yet — be the first one!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <img id="lightbox-img" src="" alt="Photo preview">
+        <a class="lightbox-download" id="lightbox-download" href="" download="photobooth.jpg">↓ Save</a>
+    </div>
+
+    <!-- ===== SUGGESTION BOX SECTION ===== -->
+    <section class="suggestion-section" id="suggestions">
+        <div class="suggestion-orb"></div>
+        <div class="suggestion-inner">
+            <!-- Header -->
+            <div class="suggestion-header">
+                <h2 class="suggestion-title">Suggestion Box 💌</h2>
+                <p class="suggestion-subtitle">
+                    What should we do? What should we eat?<br>
+                    Drop your ideas anonymously — we'll read them before the party!
+                </p>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="countdown-wrapper">
+                <span class="countdown-label">⏳ Party starts in</span>
+                <div class="countdown-boxes" id="countdown-boxes">
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-hours">00</div>
+                        <span class="countdown-unit-label">Hours</span>
+                    </div>
+                    <span class="countdown-separator">:</span>
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-minutes">00</div>
+                        <span class="countdown-unit-label">Min</span>
+                    </div>
+                    <span class="countdown-separator">:</span>
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-seconds">00</div>
+                        <span class="countdown-unit-label">Sec</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mailbox + Input -->
+            <div class="mailbox-area" id="mailbox-area">
+                <div class="mailbox" id="mailbox">
+                    <div class="mailbox-body">
+                        <div class="mailbox-slot"></div>
+                        <div class="mailbox-flag"></div>
+                        <div class="mailbox-heart">💕</div>
+                        <div class="mailbox-label">Suggestions</div>
+                    </div>
+                </div>
+
+                <div class="suggestion-form">
+                    <textarea class="suggestion-input" id="suggestion-input" placeholder="Your idea — what to do, eat, play..." maxlength="300"></textarea>
+                    <button class="btn-send-suggestion" id="btn-send-suggestion" onclick="sendSuggestion()">
+                        <span>✉️</span> Send Letter
+                    </button>
+                    <div class="sent-confirmation" id="sent-confirmation">
+                        ✓ Your letter has been delivered!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submitted Suggestions -->
+            <div class="suggestions-list" id="suggestions-list">
+                <div class="suggestions-list-header">
+                    <span class="suggestions-list-label">✦ Letters received</span>
+                    <span class="suggestions-list-count" id="suggestions-count"></span>
+                </div>
+                <div id="suggestions-cards">
+                    <!-- Cards inserted here -->
+                </div>
+                <div class="suggestions-empty" id="suggestions-empty">
+                    📭 No letters yet — be the first to drop a suggestion!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ===============================
+        //  RUNAWAY "NO" BUTTON LOGIC
+        // ===============================
+        const btnNo = document.getElementById('btn-no');
+        const btnYes = document.getElementById('btn-yes');
+        const introContent = document.getElementById('intro-content');
+        const successContent = document.getElementById('success-content');
+        const buttonsContainer = document.getElementById('buttons-container');
+
+        let noButtonEscaped = false;
+
+        function teleportNoButton() {
+            if (noButtonEscaped) {
+                // Already teleporting mode — move the absolute-positioned button
+                const btn = document.getElementById('btn-no-floating');
+                if (!btn) return;
+
+                const btnWidth = btn.offsetWidth;
+                const btnHeight = btn.offsetHeight;
+                const padding = 20;
+
+                const maxX = window.innerWidth - btnWidth - padding;
+                const maxY = window.innerHeight - btnHeight - padding;
+
+                const randomX = Math.max(padding, Math.random() * maxX);
+                const randomY = Math.max(padding, Math.random() * maxY);
+
+                btn.style.left = randomX + 'px';
+                btn.style.top = randomY + 'px';
+            } else {
+                // First escape: convert to absolute-positioned floating button
+                noButtonEscaped = true;
+
+                // Hide the original static button
+                btnNo.style.display = 'none';
+
+                // Create floating copy
+                const floatingBtn = document.createElement('button');
+                floatingBtn.id = 'btn-no-floating';
+                floatingBtn.className = 'btn-no';
+                floatingBtn.innerHTML = '<span>No</span>';
+                floatingBtn.setAttribute('aria-label', 'No');
+                document.getElementById('app').appendChild(floatingBtn);
+
+                // Set initial random position
+                const btnWidth = 140;
+                const btnHeight = 50;
+                const padding = 20;
+                const maxX = window.innerWidth - btnWidth - padding;
+                const maxY = window.innerHeight - btnHeight - padding;
+                floatingBtn.style.left = (Math.max(padding, Math.random() * maxX)) + 'px';
+                floatingBtn.style.top = (Math.max(padding, Math.random() * maxY)) + 'px';
+
+                // Add escape events to the floating button
+                addEscapeEvents(floatingBtn);
+            }
+        }
+
+        function addEscapeEvents(element) {
+            // Mouse events
+            element.addEventListener('mouseenter', function(e) {
+                e.preventDefault();
+                teleportNoButton();
+            });
+
+            element.addEventListener('mouseover', function(e) {
+                e.preventDefault();
+                teleportNoButton();
+            });
+
+            // Touch events for mobile
+            element.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                teleportNoButton();
+            }, { passive: false });
+
+            element.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
+
+            // Pointer events (covers both mouse and touch on modern browsers)
+            element.addEventListener('pointerdown', function(e) {
+                e.preventDefault();
+                teleportNoButton();
+            });
+
+            element.addEventListener('pointerenter', function(e) {
+                e.preventDefault();
+                teleportNoButton();
+            });
+
+            // Prevent click
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                teleportNoButton();
+            });
+        }
+
+        // Attach events to the initial static button
+        addEscapeEvents(btnNo);
+
+        // Also add proximity detection on mobile — if finger approaches within ~50px
+        document.addEventListener('touchmove', function(e) {
+            if (!noButtonEscaped) return;
+            const floatingBtn = document.getElementById('btn-no-floating');
+            if (!floatingBtn) return;
+
+            const touch = e.touches[0];
+            const rect = floatingBtn.getBoundingClientRect();
+            const proximity = 50;
+
+            if (
+                touch.clientX >= rect.left - proximity &&
+                touch.clientX <= rect.right + proximity &&
+                touch.clientY >= rect.top - proximity &&
+                touch.clientY <= rect.bottom + proximity
+            ) {
+                teleportNoButton();
+            }
+        }, { passive: true });
+
+
+        // ===============================
+        //  "YES" BUTTON HANDLER
+        // ===============================
+        function handleYes() {
+            // Fade out the intro
+            introContent.classList.add('fade-out');
+
+            // Also hide the floating No button if it exists
+            const floatingBtn = document.getElementById('btn-no-floating');
+            if (floatingBtn) {
+                floatingBtn.style.transition = 'opacity 0.6s ease';
+                floatingBtn.style.opacity = '0';
+                setTimeout(() => floatingBtn.remove(), 600);
+            }
+
+            // Show success content after fade out
+            setTimeout(() => {
+                introContent.style.display = 'none';
+                successContent.classList.add('show');
+
+                // Launch confetti!
+                launchConfetti();
+            }, 800);
+        }
+
+
+        // ===============================
+        //  CONFETTI ANIMATION
+        // ===============================
+        function launchConfetti() {
+            // Big initial burst
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#FF6B8A', '#FF8FA3', '#FFB3C6', '#FFDEE2', '#FFD700', '#FF69B4', '#ffffff'],
+                ticks: 200,
+                gravity: 0.8,
+                scalar: 1.2,
+            });
+
+            // Side cannons
+            setTimeout(() => {
+                confetti({
+                    particleCount: 80,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.65 },
+                    colors: ['#FF6B8A', '#FF8FA3', '#FFB3C6', '#FFDEE2', '#FFD700'],
+                });
+                confetti({
+                    particleCount: 80,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.65 },
+                    colors: ['#FF6B8A', '#FF8FA3', '#FFB3C6', '#FFDEE2', '#FFD700'],
+                });
+            }, 300);
+
+            // Gentle rain of petals
+            setTimeout(() => {
+                confetti({
+                    particleCount: 60,
+                    spread: 160,
+                    origin: { y: 0 },
+                    gravity: 0.4,
+                    ticks: 300,
+                    colors: ['#FF6B8A', '#FFB3C6', '#FFDEE2'],
+                    scalar: 1.5,
+                    shapes: ['circle'],
+                });
+            }, 700);
+
+            // Continuous gentle confetti
+            let count = 0;
+            const interval = setInterval(() => {
+                confetti({
+                    particleCount: 15,
+                    spread: 120,
+                    origin: { y: Math.random() * 0.3 },
+                    gravity: 0.5,
+                    ticks: 200,
+                    colors: ['#FF6B8A', '#FF8FA3', '#FFB3C6', '#FFDEE2'],
+                    scalar: 1,
+                });
+                count++;
+                if (count > 10) clearInterval(interval);
+            }, 500);
+        }
+
+
+        // ===============================
+        //  PHOTO BOOTH LOGIC
+        // ===============================
+        const STORAGE_KEY = 'march8_photobooth';
+        let cameraStream = null;
+
+        // Load photos from localStorage
+        function loadPhotos() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        // Save photos to localStorage
+        function savePhotos(photos) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+            } catch(e) {
+                // localStorage might be full — remove oldest photo and retry
+                if (photos.length > 1) {
+                    photos.shift();
+                    savePhotos(photos);
+                }
+            }
+        }
+
+        // Start camera
+        async function startCamera() {
+            const video = document.getElementById('camera-video');
+            const placeholder = document.getElementById('camera-placeholder');
+            const btnStart = document.getElementById('btn-camera-start');
+            const btnCapture = document.getElementById('btn-capture');
+            const btnStop = document.getElementById('btn-stop-camera');
+
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } },
+                    audio: false
+                });
+
+                video.srcObject = cameraStream;
+                placeholder.classList.add('hidden');
+                btnStart.classList.add('hidden');
+                btnCapture.classList.remove('hidden');
+                btnStop.classList.remove('hidden');
+            } catch (err) {
+                alert('Could not access camera. Please allow camera permissions and try again.');
+                console.error('Camera error:', err);
+            }
+        }
+
+        // Stop camera
+        function stopCamera() {
+            const video = document.getElementById('camera-video');
+            const placeholder = document.getElementById('camera-placeholder');
+            const btnStart = document.getElementById('btn-camera-start');
+            const btnCapture = document.getElementById('btn-capture');
+            const btnStop = document.getElementById('btn-stop-camera');
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            video.srcObject = null;
+            placeholder.classList.remove('hidden');
+            btnStart.classList.remove('hidden');
+            btnCapture.classList.add('hidden');
+            btnStop.classList.add('hidden');
+        }
+
+        // Capture photo
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('camera-canvas');
+            const flash = document.getElementById('camera-flash');
+
+            // Set canvas dimensions to video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            // Mirror the image (front camera)
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            // Flash effect
+            flash.classList.add('flash-active');
+            setTimeout(() => flash.classList.remove('flash-active'), 500);
+
+            // Convert to data URL (JPEG for smaller size)
+            const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+
+            // Save to localStorage
+            const photos = loadPhotos();
+            const now = new Date();
+            photos.push({
+                src: dataURL,
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: now.toLocaleDateString()
+            });
+            savePhotos(photos);
+
+            // Update gallery
+            renderGallery();
+        }
+
+        // Render gallery
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const empty = document.getElementById('gallery-empty');
+            const count = document.getElementById('gallery-count');
+            const photos = loadPhotos();
+
+            if (photos.length === 0) {
+                empty.style.display = 'block';
+                grid.innerHTML = '';
+                count.textContent = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+            count.textContent = photos.length + ' photo' + (photos.length !== 1 ? 's' : '');
+
+            // Render in reverse (newest first)
+            grid.innerHTML = photos.slice().reverse().map((photo, i) => {
+                const realIndex = photos.length - 1 - i;
+                return `
+                    <div class="gallery-item" onclick="openLightbox('${realIndex}')">
+                        <img src="${photo.src}" alt="Photo ${realIndex + 1}" loading="lazy">
+                        <div class="gallery-item-overlay">
+                            <span class="gallery-item-time">${photo.time}</span>
+                            <button class="gallery-item-delete" onclick="event.stopPropagation(); deletePhoto(${realIndex})" title="Delete">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Delete a photo
+        function deletePhoto(index) {
+            const photos = loadPhotos();
+            photos.splice(index, 1);
+            savePhotos(photos);
+            renderGallery();
+        }
+
+        // Lightbox
+        function openLightbox(index) {
+            const photos = loadPhotos();
+            const photo = photos[index];
+            if (!photo) return;
+
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const downloadLink = document.getElementById('lightbox-download');
+
+            img.src = photo.src;
+            downloadLink.href = photo.src;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(e) {
+            if (e && e.target !== e.currentTarget && !e.target.classList.contains('lightbox-close')) return;
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Close lightbox on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // Initialize gallery on load
+        renderGallery();
+
+
+        // ===============================
+        //  COUNTDOWN TIMER
+        // ===============================
+        // Target: Saturday March 14, 2026 at 14:00 local time
+        const PARTY_DATE = new Date('2026-03-14T14:00:00+05:00');
+
+        function updateCountdown() {
+            const now = new Date();
+            let diff = PARTY_DATE - now;
+
+            if (diff <= 0) {
+                document.getElementById('cd-hours').textContent = '🎉';
+                document.getElementById('cd-minutes').textContent = '🎉';
+                document.getElementById('cd-seconds').textContent = '🎉';
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            diff -= hours * (1000 * 60 * 60);
+            const minutes = Math.floor(diff / (1000 * 60));
+            diff -= minutes * (1000 * 60);
+            const seconds = Math.floor(diff / 1000);
+
+            document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+
+        // ===============================
+        //  SUGGESTION BOX LOGIC
+        // ===============================
+        const SUGGESTIONS_KEY = 'march8_suggestions';
+
+        function loadSuggestions() {
+            try {
+                const data = localStorage.getItem(SUGGESTIONS_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveSuggestions(suggestions) {
+            try {
+                localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(suggestions));
+            } catch(e) {
+                console.error('Could not save suggestions:', e);
+            }
+        }
+
+        // Flying letter animation
+        function animateFlyingLetter() {
+            const mailboxArea = document.getElementById('mailbox-area');
+            const mailbox = document.getElementById('mailbox');
+            const input = document.getElementById('suggestion-input');
+
+            const letter = document.createElement('div');
+            letter.className = 'flying-letter';
+            letter.textContent = '✉️';
+
+            // Position letter at the input area
+            const inputRect = input.getBoundingClientRect();
+            const mailboxRect = mailbox.getBoundingClientRect();
+            const areaRect = mailboxArea.getBoundingClientRect();
+
+            const startX = inputRect.left + inputRect.width / 2 - areaRect.left;
+            const startY = inputRect.top - areaRect.top;
+
+            const endX = mailboxRect.left + mailboxRect.width / 2 - areaRect.left - startX;
+            const endY = mailboxRect.top + 20 - areaRect.top - startY;
+
+            letter.style.left = startX + 'px';
+            letter.style.top = startY + 'px';
+            letter.style.setProperty('--fly-x', endX + 'px');
+            letter.style.setProperty('--fly-y', endY + 'px');
+
+            mailboxArea.appendChild(letter);
+
+            letter.style.animation = 'fly-letter 1s cubic-bezier(0.22, 1, 0.36, 1) forwards';
+
+            setTimeout(() => letter.remove(), 1100);
+        }
+
+        // Send suggestion
+        function sendSuggestion() {
+            const input = document.getElementById('suggestion-input');
+            const btn = document.getElementById('btn-send-suggestion');
+            const confirmation = document.getElementById('sent-confirmation');
+            const text = input.value.trim();
+
+            if (!text) {
+                input.focus();
+                input.style.borderColor = 'rgba(255, 80, 80, 0.5)';
+                setTimeout(() => input.style.borderColor = '', 1500);
+                return;
+            }
+
+            // Disable button
+            btn.disabled = true;
+
+            // Fly the letter!
+            animateFlyingLetter();
+
+            // Save after animation
+            setTimeout(() => {
+                const suggestions = loadSuggestions();
+                const now = new Date();
+                suggestions.push({
+                    text: text,
+                    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: now.toLocaleDateString()
+                });
+                saveSuggestions(suggestions);
+
+                // Clear input
+                input.value = '';
+
+                // Show confirmation
+                confirmation.classList.add('show');
+                setTimeout(() => confirmation.classList.remove('show'), 3000);
+
+                // Re-enable button
+                btn.disabled = false;
+
+                // Update list
+                renderSuggestions();
+            }, 800);
+        }
+
+        // Render suggestions
+        function renderSuggestions() {
+            const container = document.getElementById('suggestions-cards');
+            const empty = document.getElementById('suggestions-empty');
+            const count = document.getElementById('suggestions-count');
+            const suggestions = loadSuggestions();
+
+            if (suggestions.length === 0) {
+                empty.style.display = 'block';
+                container.innerHTML = '';
+                count.textContent = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+            count.textContent = suggestions.length + ' letter' + (suggestions.length !== 1 ? 's' : '');
+
+            // Newest first
+            container.innerHTML = suggestions.slice().reverse().map((s, i) => {
+                // Escape HTML
+                const safe = s.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return `
+                    <div class="suggestion-card">
+                        <div class="suggestion-card-text">${safe}</div>
+                        <div class="suggestion-card-meta">
+                            <span class="anon-badge">Anonymous</span>
+                            <span>${s.time} · ${s.date}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Allow Ctrl+Enter / Cmd+Enter to send
+        document.getElementById('suggestion-input').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                sendSuggestion();
+            }
+        });
+
+        // Initialize suggestions on load
+        renderSuggestions();
+    </script>
+</body>
+</html>
